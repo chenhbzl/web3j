@@ -213,7 +213,8 @@ public class JsonRpc2_0Web3j implements Web3j {
     @Override
     public Request<?, EthBlockNumber> ethBlockNumber() {
         return new Request<>(
-                "eth_blockNumber",
+                "cita_blockNumber",
+                //"eth_blockNumber",
                 Collections.<String>emptyList(),
                 ID,
                 web3jService,
@@ -337,7 +338,8 @@ public class JsonRpc2_0Web3j implements Web3j {
             ethSendRawTransaction(
             String signedTransactionData) {
         return new Request<>(
-                "eth_sendRawTransaction",
+                "cita_sendTransaction",
+                //"eth_sendRawTransaction",
                 Arrays.asList(signedTransactionData),
                 ID,
                 web3jService,
@@ -369,7 +371,8 @@ public class JsonRpc2_0Web3j implements Web3j {
     public Request<?, EthBlock> ethGetBlockByHash(
             String blockHash, boolean returnFullTransactionObjects) {
         return new Request<>(
-                "eth_getBlockByHash",
+                "cita_getBlockByHash",
+                //"eth_getBlockByHash",
                 Arrays.asList(
                         blockHash,
                         returnFullTransactionObjects),
@@ -383,7 +386,8 @@ public class JsonRpc2_0Web3j implements Web3j {
             DefaultBlockParameter defaultBlockParameter,
             boolean returnFullTransactionObjects) {
         return new Request<>(
-                "eth_getBlockByNumber",
+                "cita_getBlockByNumber",
+                //"eth_getBlockByNumber",
                 Arrays.asList(
                         defaultBlockParameter.getValue(),
                         returnFullTransactionObjects),
@@ -395,7 +399,8 @@ public class JsonRpc2_0Web3j implements Web3j {
     @Override
     public Request<?, EthTransaction> ethGetTransactionByHash(String transactionHash) {
         return new Request<>(
-                "eth_getTransactionByHash",
+                "cita_getTransaction",
+                //"eth_getTransactionByHash",
                 Arrays.asList(transactionHash),
                 ID,
                 web3jService,

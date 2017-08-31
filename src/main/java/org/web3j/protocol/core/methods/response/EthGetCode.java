@@ -9,4 +9,11 @@ public class EthGetCode extends Response<String> {
     public String getCode() {
         return getResult();
     }
+
+    public boolean isEmpty() {
+        if(getResult() == null)
+            return true;
+        else
+            return false;
+    }
 }
