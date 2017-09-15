@@ -17,6 +17,10 @@ import org.web3j.crypto.Credentials;
 import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Sign;
 
+import static org.abstractj.kalium.encoders.Encoder.HEX;
+import org.abstractj.kalium.keys.SigningKey;
+import org.abstractj.kalium.crypto.Hash;
+
 /**
  * Transaction request object used the below methods.
  * <ol>
@@ -33,6 +37,7 @@ public class Transaction {
     private long quota;  // gas
     private long valid_until_block;
     private String data;
+    private final Hash hash = new Hash();
 
     public Transaction(String to, BigInteger nonce, long quota, long valid_until_block, String data) {
         this.to = to;
@@ -86,6 +91,10 @@ public class Transaction {
     }
 
     public String sign(String privateKey) {
+        return sign(privateKey, false);
+    }
+
+    public String sign(String privateKey, boolean isEd25519AndBlake2b) {
         Blockchain.Transaction.Builder builder = Blockchain.Transaction.newBuilder();
         byte[] strbyte = ConvertStrByte.hexStringToBytes(Numeric.cleanHexPrefix(getData()));
         ByteString bdata = ByteString.copyFrom(strbyte);
@@ -97,11 +106,21 @@ public class Transaction {
         builder.setQuota(getQuota());
         Blockchain.Transaction tx = builder.build();
 
-        Credentials credentials = Credentials.create(privateKey);
-        ECKeyPair keyPair = credentials.getEcKeyPair();
-
-        Sign.SignatureData signatureData = Sign.signMessage(tx.toByteArray(), keyPair);
-        byte[] sig = signatureData.get_signature();
+        byte[] sig;
+        if (isEd25519AndBlake2b) {
+            byte[] message = hash.blake2(tx.toByteArray(), "CryptapeCryptape".getBytes(), null, null);
+            SigningKey key = new SigningKey(privateKey, HEX);
+            byte[] pk = key.getVerifyKey().toBytes();
+            byte[] signature = key.sign(message);
+            sig = new byte[signature.length + pk.length];
+            System.arraycopy(signature, 0, sig, 0, signature.length);  
+            System.arraycopy(pk, 0, sig, signature.length, pk.length);  
+        } else {
+            Credentials credentials = Credentials.create(privateKey);
+            ECKeyPair keyPair = credentials.getEcKeyPair();    
+            Sign.SignatureData signatureData = Sign.signMessage(tx.toByteArray(), keyPair);
+            sig = signatureData.get_signature();
+        }
 
         Blockchain.UnverifiedTransaction.Builder builder1 = Blockchain.UnverifiedTransaction.newBuilder();
         builder1.setTransaction(tx);
