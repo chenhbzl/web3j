@@ -21,7 +21,7 @@ import org.web3j.abi.datatypes.Type;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterName;
-import org.web3j.protocol.core.methods.request.Transaction;
+import org.web3j.protocol.core.methods.request.Call;
 import org.web3j.protocol.core.methods.response.EthGetCode;
 import org.web3j.protocol.core.methods.response.Log;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -148,7 +148,7 @@ public abstract class Contract extends ManagedTransaction {
             Function function) throws InterruptedException, ExecutionException {
         String encodedFunction = FunctionEncoder.encode(function);
         org.web3j.protocol.core.methods.response.EthCall ethCall = web3j.ethCall(
-                Transaction.createEthCallTransaction(
+                new Call(
                         transactionManager.getFromAddress(), contractAddress, encodedFunction),
                 DefaultBlockParameterName.LATEST)
                 .sendAsync().get();

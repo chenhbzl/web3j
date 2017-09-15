@@ -2,12 +2,10 @@ package org.web3j.tx;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.concurrent.ExecutionException;
 
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.methods.request.Transaction;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
-import org.web3j.protocol.exceptions.TransactionTimeoutException;
 
 /**
  * TransactionManager implementation for using an Ethereum node to transact.
@@ -40,7 +38,7 @@ public class ClientTransactionManager extends TransactionManager {
             throws IOException {
 
         Transaction transaction = new Transaction(
-                fromAddress, null, gasPrice, gasLimit, to, value, data);
+                to, BigInteger.valueOf(1), 1000000, 99, data);
 
         return web3j.ethSendTransaction(transaction)
                 .send();

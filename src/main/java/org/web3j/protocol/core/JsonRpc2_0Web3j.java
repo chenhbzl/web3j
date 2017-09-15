@@ -12,6 +12,7 @@ import org.web3j.protocol.Web3jService;
 import org.web3j.protocol.core.methods.request.ShhFilter;
 import org.web3j.protocol.core.methods.request.ShhPost;
 import org.web3j.protocol.core.methods.request.Transaction;
+import org.web3j.protocol.core.methods.request.Call;
 import org.web3j.protocol.core.methods.response.DbGetHex;
 import org.web3j.protocol.core.methods.response.DbGetString;
 import org.web3j.protocol.core.methods.response.DbPutHex;
@@ -348,10 +349,10 @@ public class JsonRpc2_0Web3j implements Web3j {
 
     @Override
     public Request<?, org.web3j.protocol.core.methods.response.EthCall> ethCall(
-            Transaction transaction, DefaultBlockParameter defaultBlockParameter) {
+            Call call, DefaultBlockParameter defaultBlockParameter) {
         return new Request<Object, EthCall>(
                 "eth_call",
-                Arrays.asList(transaction, defaultBlockParameter),
+                Arrays.asList(call, defaultBlockParameter),
                 ID,
                 web3jService,
                 org.web3j.protocol.core.methods.response.EthCall.class);
