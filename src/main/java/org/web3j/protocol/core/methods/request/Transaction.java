@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import org.web3j.utils.Numeric;
 
 import org.web3j.protobuf.Blockchain;
+import org.web3j.protobuf.Ipaynow;
 
 import org.web3j.protobuf.ConvertStrByte;
 import org.web3j.protobuf.Blockchain.Crypto;
@@ -129,5 +130,37 @@ public class Transaction {
         Blockchain.UnverifiedTransaction utx = builder1.build();
 
         return ConvertStrByte.bytesToHexString(utx.toByteArray());
+    }
+
+    public String signOldStyle(String privateKey) {
+        byte[] strbyte = ConvertStrByte.hexStringToBytes(Numeric.cleanHexPrefix(getData()));
+        ByteString bdata = ByteString.copyFrom(strbyte);
+
+        Ipaynow.Content.Builder content_builder = Ipaynow.Content.newBuilder();
+        content_builder.setNonce("1234");
+        content_builder.setData(bdata);
+        Ipaynow.Content content = content_builder.build();
+
+        Ipaynow.Transaction.Builder builder = Ipaynow.Transaction.newBuilder();
+        builder.setTo(getTo());
+        builder.setContent(ByteString.copyFrom(content.toByteArray()));
+        Ipaynow.Transaction tx = builder.build();
+
+        byte[] sig;
+        Credentials credentials = Credentials.create(privateKey);
+        ECKeyPair keyPair = credentials.getEcKeyPair();    
+        Sign.SignatureData signatureData = Sign.signMessage(tx.toByteArray(), keyPair);
+        sig = signatureData.get_signature();
+
+        Ipaynow.SignedTransaction.Builder stx_builder = Ipaynow.SignedTransaction.newBuilder();
+        stx_builder.setTransaction(ByteString.copyFrom(tx.toByteArray()));
+        stx_builder.setSignature(ByteString.copyFrom(sig));
+        Ipaynow.SignedTransaction stx = stx_builder.build();
+
+        builder.clearContent();
+        builder.setContent(ByteString.copyFrom(stx.toByteArray()));
+        Ipaynow.Transaction new_tx = builder.build();
+
+        return ConvertStrByte.bytesToHexString(new_tx.toByteArray());
     }
 }
